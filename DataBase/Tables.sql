@@ -25,17 +25,15 @@ CREATE TABLE `Study_session`(
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `User_id` INT UNSIGNED NOT NULL,
     `Deck_id` INT UNSIGNED NOT NULL,
-    `Studid_at` TIMESTAMP NOT NULL,
+    `Studid_at` TIMESTAMP NOT NULL default current_timestamp,
     FOREIGN KEY (`User_id`) REFERENCES `User`(`id`),
     FOREIGN KEY (`Deck_id`) REFERENCES `Deck`(`id`)
 );
 CREATE TABLE `Progress`(
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `User_id` INT UNSIGNED NOT NULL,
     `Card_id` INT UNSIGNED NOT NULL,
-    `Attempts` INT NOT NULL,
-    `Correct` INT NOT NULL,
-    `Last_review` TIMESTAMP NOT NULL,
-    FOREIGN KEY (`User_id`) REFERENCES `User`(`id`),
+    `Attempts` INT NOT NULL default 0,
+    `Correct` INT NOT NULL default 0,
+    `Last_review` TIMESTAMP NOT NULL default current_timestamp,
     FOREIGN KEY (`Card_id`) REFERENCES `FlashCards`(`id`)
     );

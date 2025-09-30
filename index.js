@@ -7,7 +7,7 @@ function login() {
   const user = document.getElementById("username").value;
   const pass = document.getElementById("password").value;
 
-  // demo: fixed credentials
+  // demo: fixed password
   if (user === "student" && pass === "1234") {
     document.getElementById("login-page").style.display = "none";
     document.getElementById("flashcards-app").style.display = "block";
@@ -15,6 +15,9 @@ function login() {
     document.getElementById("login-error").style.display = "block";
   }
 }
+
+
+
 
 const LS_KEY = "flashcards_pro_v1";
 let state = {

@@ -1,6 +1,10 @@
-use FLASHCARD
+use FLASHCARD;
 
+call AddUser('yonas','email','12345',@result);
+select @result as result;
 /*---------------Add User---------------*/
+
+select * from `User`
 DELIMITER $$
 CREATE PROCEDURE AddUser
 (
@@ -10,10 +14,21 @@ IN password_hash varchar(255),
 OUT result int
 )
 BEGIN
-	IF(EXISTS(SELECT 1 FROM  `User` WHERE  `Name`=name_))
+DECLARE name_count INT DEFAULT 0;
+    DECLARE email_count INT DEFAULT 0;
+
+    SELECT COUNT(*) INTO name_count
+    FROM `User`
+    WHERE `Name` = name_;
+
+    SELECT COUNT(*) INTO email_count
+    FROM `User`
+    WHERE `Email` = email;
+
+	IF(name_count>0)
     THEN
 		set result=0;
-	ELSEIF EXISTS(SELECT 1 FROM  `User` WHERE  `Email`=email)  
+	ELSEIF (email_count >0)
     THEN
 		set result=1;
     ELSE
@@ -105,16 +120,18 @@ CREATE PROCEDURE AddDeck
 IN id int,
 IN title varchar(100),
 IN description_ text,
-OUT result int
+OUT pResult INT,
+OUT pDeckId INT
 )
 BEGIN
 	INSERT INTO `Deck`(`User_id`,`Title`,`Description`)
     VALUES(id,title,description_);
+    SET pDeckId = LAST_INSERT_ID();
     IF(row_count()=0)
     THEN
-		SET result=0;
+		SET pResult=0;
 	ELSE 
-		SET result=1;
+		SET pResult=1;
 	END IF;
 END$$
 
@@ -126,13 +143,13 @@ DELIMITER $$
 
 CREATE PROCEDURE EditDeck
 (
-IN id int,
+IN Deckid int,
 IN title varchar(100),
 IN description_ text,
 OUT result int
 )
 BEGIN
-	UPDATE  `Deck`SET `Title`=title,`Description`=description_ WHERE `id`=id;
+	UPDATE  `Deck`SET `Title`=title,`Description`=description_ WHERE `id`=Deckid;
     IF(row_count()=0)
     THEN
 		SET result=0;
@@ -149,17 +166,45 @@ DELIMITER $$
 
 CREATE PROCEDURE DeleteDeck
 (
-IN id int,
+IN Deckid int,
 OUT result int
 )
 BEGIN
-	DELETE FROM  `Deck` WHERE `id`=id;
+	DELETE FROM  `Deck` WHERE `id`=Deckid;
     IF(row_count()=0)
     THEN
 		SET result=0;
 	ELSE 
 		SET result=1;
 	END IF;
+END$$
+
+DELIMITER ;
+/*---------------Get Deck---------------*/
+
+DELIMITER $$
+
+CREATE PROCEDURE GetDeck()
+BEGIN
+	
+    select * FROM `Deck`;
+    
+END$$
+
+DELIMITER ;
+
+/*---------------Get Deck BY Id---------------*/
+
+DELIMITER $$
+
+CREATE PROCEDURE GetDeckById
+(
+IN deckId  int
+)
+BEGIN
+	
+    SELECT * FROM `Deck` WHERE `id`=deckId;
+    
 END$$
 
 DELIMITER ;
@@ -173,10 +218,12 @@ CREATE PROCEDURE AddCard
 IN deck_id int,
 IN question text,
 IN answer text,
-OUT result int)
+OUT result int,
+OUT CardId int)
 BEGIN
 	INSERT INTO `FlashCards` (`Deck_id`,`Question`,`Answer`) 
     VALUES(deck_id,question,answer);
+    SET CardId=LAST_INSERT_ID();
     IF(row_count()=0)
     THEN
 		SET result=0;
@@ -215,16 +262,32 @@ DELIMITER $$
 
 CREATE PROCEDURE DelteCard
 (
-IN id int,
+IN CatdId int,
 OUT result int)
 BEGIN
-	DELETE FROM `FlashCards` WHERE `id`=id;
+	DELETE FROM `FlashCards` WHERE `id`=CatdId;
     IF(row_count()=0)
     THEN
 		SET result=0;
 	ELSE
 		SET result=1;
 	END IF;
+END$$
+
+DELIMITER ;
+
+/*---------------get Card---------------*/
+
+DELIMITER $$
+
+CREATE PROCEDURE GetCards
+(
+IN deckid int
+)
+BEGIN
+	
+    SELECT * FROM `FlashCards` WHERE `Deck_id`=deckid;
+    
 END$$
 
 DELIMITER ;

@@ -7,6 +7,24 @@
     <title>Flashcards Pro — Study Smarter</title>
 </head>
 <body>
+
+  <!-- first comes the login page  after js approval from backend it will display -->
+  <div id="login-page">
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username" />
+  <input type="password" id="password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <p id="login-error" style="color:red;display:none;">Invalid login</p>
+</div>
+
+
+
+
+
+
+
+<div id="flashcards-app" style="display:none;">
+
     <header>
          <h1>Flach Card Pro</h1>
           <div class="small muted">
@@ -177,6 +195,7 @@
       Built with plain HTML/CSS/JS — stores decks in your browser using
       localStorage.
     </footer>
+</div>
     <script src="index.js"></script>
 </body>
 </html>

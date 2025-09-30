@@ -9,6 +9,7 @@ let cards=[];
 let currentId=0;
 
 submitDeckButton.addEventListener("click",AddDeck);
+
 cancelDeckButton.addEventListener("click",UnToggleMenu);
 addDeckButton.addEventListener("click",ToggleMenu);
 editButton.addEventListener("click",EditDeck)
@@ -21,17 +22,21 @@ function UnToggleMenu(){
     document.getElementById("deckNameError").style.display = "none";
 }
 function ToggleMenu() {
+
     if(window.document.getElementById("deckForm").style.display==="none") {
         window.document.getElementById("deckForm").style.display="flex";
         window.document.getElementById("deckForm").style.alignItems="center";
         window.document.getElementById("deckForm").style.flexDirection="column";
     } else {
+    
         window.document.getElementById("deckForm").style.display="none";
         window.document.getElementById("deckName").value="";
         window.document.getElementById("deckDescription").value="";
         document.getElementById("deckNameError").style.display = "none";
     }
+
 }
+
 function AddDeck() {
     const section=window.document.getElementById("deckList");
     const DeckName=window.document.getElementById("deckName").value;
@@ -46,6 +51,7 @@ function AddDeck() {
     } else {
         nameError.style.display = "none";
     }
+
 
     fetch("/public/assets/php/main.php", {
         method: "POST",

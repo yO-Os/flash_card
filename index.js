@@ -1,5 +1,21 @@
 //  Data model & persistence 
 //might have to join with other design
+
+
+
+function login() {
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+
+  // demo: fixed credentials
+  if (user === "student" && pass === "1234") {
+    document.getElementById("login-page").style.display = "none";
+    document.getElementById("flashcards-app").style.display = "block";
+  } else {
+    document.getElementById("login-error").style.display = "block";
+  }
+}
+
 const LS_KEY = "flashcards_pro_v1";
 let state = {
   decks: [],

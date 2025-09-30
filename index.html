@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="index.css" />
+    <title>Flashcards Pro — Study Smarter</title>
 </head>
 <body>
     <header>
@@ -128,6 +129,7 @@
             <div class="progressbar" title="progress">
               <i id="progressFill"></i>
             </div>
+
             <div id="statText" class="muted tiny">0 reviewed • 0 due</div>
             <div style="margin-left: auto" class="chips">
               <div class="chip" id="streak">Streak: 0</div>
@@ -135,6 +137,52 @@
             </div>
           </div>
         </div>
+        
+        <div class="panel" id="sidePanel" style="margin-top: 12px">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 8px;
+            "
+          >
+            <strong>Edit Cards</strong>
+            <div class="small muted">Add, import, export cards</div>
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 120px;
+              gap: 8px;
+              margin-bottom: 8px;
+            "
+          >
+            <input id="newQ" placeholder="Question" />
+            <input id="newTag" placeholder="tag" />
+          </div>
+          <textarea id="newA" placeholder="Answer" rows="3"></textarea>
+          <div style="display: flex; gap: 8px; margin-top: 8px">
+            <button id="addCardBtn">Add Card</button
+            ><button id="bulkImport">Paste JSON</button
+            ><button id="clearCards">Clear All</button>
+          </div>
+          <hr />
+          <div id="cardsList" style="max-height: 160px; overflow: auto"></div>
+        </div>
+      </main>
+    </div>
 
+    <footer class="muted tiny">
+      Built with plain HTML/CSS/JS — stores decks in your browser using
+      localStorage.
+    </footer>
+    <script src="index.js"></script>
 </body>
 </html>
+
+
+
+
+
+

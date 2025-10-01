@@ -9,12 +9,15 @@
 <body>
 
   <!-- first comes the login page  after js approval from backend it will display -->
-  <div id="login-page">
-  <h2>Login</h2>
-  <input type="text" id="username" placeholder="Username" />
-  <input type="password" id="password" placeholder="Password" />
-  <button onclick="login()">Login</button>
-  <p id="login-error" style="color:red;display:none;">Invalid login</p>
+<div id="login-page" class="login-container">
+  <div class="login-box">
+    <h2>Welcome Back</h2>
+    <p class="login-sub">Sign in to continue studying</p>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p id="login-error">Invalid username or password</p>
+  </div>
 </div>
 
 

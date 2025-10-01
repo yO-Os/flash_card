@@ -56,8 +56,8 @@ error_reporting(E_ALL);
             </div>
         </div>
         <div>
-            <button data-id="<?= $deck['id'] ?>" class="select">Open</button>
-            <button data-id="<?= $deck['id'] ?>" class="delete">Delete</button>
+            <button data-id="<?= htmlspecialchars($deck['id']) ?>" class="select">Open</button>
+            <button data-id="<?= htmlspecialchars($deck['id']) ?>" class="delete">Delete</button>
         </div>
     </div>
 <?php endforeach; ?>

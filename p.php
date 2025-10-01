@@ -1,7 +1,6 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Configuration (e.g., sessions,global variaables)
+//IMPORTANT: Disable display_errors in production via php.ini or environment config
 ?>
 
 

@@ -1,0 +1,170 @@
+/* deck.css */
+
+/* Reset some basic styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Body styling */
+body {
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Header styling */
+header {
+    width: 100%;
+    padding: 2rem;
+    text-align: center;
+    background-color: #2a2a2a;
+    border-bottom: 2px solid #3a3a3a;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #00ffff; /* cyan-ish title */
+}
+
+header p {
+    font-size: 1.2rem;
+    color: #ccc;
+}
+
+/* Main content */
+main {
+    width: 90%;
+    max-width: 1200px;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Cards container */
+main section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+/* card styling */
+.card {
+    background-color: rgba(129, 169, 201, 0.2);
+    border: 1px solid #00ffff;
+    border-radius: 20px;
+    padding: 10px;
+    width: 20VW;
+    min-height: 35VH;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 10px;
+    align-items: center;
+}
+
+
+.card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #00ffff;
+}
+
+.card p {
+    font-size: 1rem;
+    color: #f0f0f0;
+}
+
+/* Add Card button */
+#AddCard {
+    background-color: #00ffff;
+    color: #1e1e1e;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#AddCard:hover {
+    background-color: #00cccc;
+}
+#CardForm,#EditCardForm {
+    display: none;            
+    position: fixed;            
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1e1e1e;  
+    padding: 1rem 2rem;
+    border-radius: 0 0 8px 8px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    gap: 0.5rem;
+    z-index: 1000;
+    width: 45%;
+    height: 75%;
+    justify-content: center;
+}
+
+/* Input field */
+#Question,#Answer,#EditQuestion,#EditAnswer {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    background-color: #2a2a2a;
+    color: #f5f5f5;
+    margin: 10px;
+}
+
+/* Buttons */
+#submitDeck, #cancelDeck,#EditsubmitDeck, #EditcancelDeck {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#submitDeck, #EditsubmitDeck {
+    background-color: #00bcd4;
+    color: #fff;
+}
+
+#submitDeck:hover, #EditsubmitDeck:hover {
+    background-color: #0097a7;
+}
+
+#cancelDeck, #EditcancelDeck {
+    background-color: #3a3a3a;
+    color: #f5f5f5;
+}
+
+#cancelDeck:hover,  #EditcancelDeck:hover {
+    background-color: #575757;
+}
+div div {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+div h2 {
+    margin-bottom: 1rem;
+    color: white;
+    text-align: center;
+}
+
+
+
+

@@ -18,11 +18,11 @@ error_reporting(E_ALL);
 <body>
 <header>
   <h1>Flashcards Pro</h1>
-  <div class="small muted">Smart study with spaced repetition, import/export, edit & quiz modes</div>
+  <div class="small muted">Smart study</div>
   <div class="toolbar">
     <button id="newDeckBtn">+ New Deck</button>
-    <button id="importBtn">Import</button>
-    <button id="exportBtn">Export</button>
+    <button id="importBtn">Progress</button>
+    <button id="exportBtn">Need Reviewing</button>
     <button id="themeBtn">Toggle Theme</button>
   </div>
 </header>
@@ -67,8 +67,8 @@ error_reporting(E_ALL);
  <div id="deckForm">
         <h2>Deck Info</h2>
         <input type="text" id="deckName" placeholder="Deck Name">
-        <span id="deckNameError" style="color:red; font-size:0.9rem; display:none;"></span>
         <input type="text" id="deckDescription" placeholder="Deck Description">
+        <span id="deckNameError" style="color:red; font-size:0.9rem; display:none;"></span>
         <div>
             <button id="submitDeck" name="submitDeck">Submit</button>
             <button id="cancelDeck">Cancel</button>
@@ -80,7 +80,7 @@ error_reporting(E_ALL);
         <input type="text" id="EditQuestion" placeholder="Question">
         
         <input type="text" id="EditAnswer" placeholder="Answer">
-        <span id="deckNameError" style="color:red; font-size:0.9rem; display:none;"></span>
+        <span id="EditCardError" style="color:red; font-size:0.9rem; display:none;"></span>
         <div>
             <button id="submitCard" name="submitCard">Submit</button>
             <button id="cancelCard">Cancel</button>
@@ -141,12 +141,19 @@ error_reporting(E_ALL);
         <input id="newQ" placeholder="Question" />
       </div>
       <textarea id="newA" placeholder="Answer" rows="3"></textarea>
-      <span id="AddCardError" style="display:none;"></span>
-      <div style="display:flex;gap:8px;margin-top:8px"><button id="addCardBtn">Add Card</button><button id="clearCards">Cancel</button>
-      <hr />
-      <div id="cardsList" style="max-height:160px;overflow:auto"></div>
-    </div>
+      <span id="AddCardError" style="display:none; color:red;"></span>
+      <div style="margin-top:8px">
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <button id="addCardBtn">Add Card</button>
+    <button id="clearCards">Cancel</button>
+  </div>
 
+  <hr />
+
+  <div id="cardsList" style="max-height:160px;overflow:auto"></div>
+</div>
+
+      
   </main>
 </div>
 

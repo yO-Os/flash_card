@@ -58,37 +58,7 @@ function AddDeck() {
     .then(data=>{
         if(data.success){
 
-            let div=window.document.createElement("div");
-            div.classList.add("deck-item");
-            div.innerHTML=`
-        <div>
-            <strong>${DeckName}</strong>
-            <div class="small muted" style="font-size: 13px; color: #9fb3c8;">
-                ${DeckDescription}
-            </div>
-        </div>
-        <div>
-            <button data-id="${data.id}" class="select" style="background: #0b1220;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: #e6eef8;padding: 8px 10px;border-radius: 10px;cursor: pointer;">Open</button>
-            <button data-id="${data.id}" class="delete" style="background: #0b1220;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: #e6eef8;padding: 8px 10px;border-radius: 10px;cursor: pointer;>Delete</button>
-        </div>
-            `;
-            div.style.display="flex";
-            div.style.justifyContent="space-between";
-            //div.style.border="1px solid white";
-            div.style.padding="10px";
-            div.style.marginBottom="8px";
-            div.style.borderRadius="8px";
-            div.style.alignItems="center";
-            div.style.gap="8px";
-            // div.style.width="20VW";
-            // div.style.minHeight="35VH";
-            // div.style.backgroundColor="rgba(129, 169, 201, 0.5)";
-
-            section.appendChild(div);
+            reloadDecks();
             window.document.getElementById("deckForm").style.display="none";
         } else {
             nameError.textContent = "Error adding deck";
@@ -144,7 +114,17 @@ function reloadDecks() {
       document.getElementById("deckList").innerHTML = html;
     });
 }
-
+function reloadCards() {
+        
+    fetch(`/public/assets/php/cards.php?deckId=${encodeURIComponent(currentId)}`, {
+    method: "GET",
+    headers: { "Accept": "application/json" }
+})
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("cardsList").innerHTML = html;
+    });
+ }
 function EditDeck(){
     const DeckNameEdit=window.document.getElementById("deckTitle")
     const deckDescriptionEdit=window.document.getElementById("deckTags");
@@ -170,8 +150,8 @@ function attachDeckEventListeners() {
             const deckId = e.target.dataset.id;
             currentId=deckId;
             fetchCard();
+            reloadCards();
             console.log("Open deck", deckId);
-            // window.location.href = "deck.php?id=" + deckId;
         }
 
 

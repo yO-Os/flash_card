@@ -64,6 +64,7 @@ function AddCard() {
     .then(data=>{
         if(data.success){
             fetchCard();
+            reloadCards();
             alert("Card added successfully");
             clearCards();
         }else {
@@ -123,5 +124,5 @@ function EditCard() {
             else alert('Error Editing card');
         });
  }
-    
 
+ 

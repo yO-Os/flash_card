@@ -3,18 +3,103 @@
 
 
 
-function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
+// function login() {
+//   const user = document.getElementById("username").value;
+//   const pass = document.getElementById("password").value;
 
-  // demo: fixed password
-  if (user === "student" && pass === "1234") {
-    document.getElementById("login-page").style.display = "none";
-    document.getElementById("flashcards-app").style.display = "block";
+//   //  fixed password
+//   if (user === "student" && pass === "1234") {
+//     document.getElementById("login-page").style.display = "none";
+//     document.getElementById("flashcards-app").style.display = "block";
+//   } else {
+//     document.getElementById("login-error").style.display = "block";
+//   }
+// }
+
+const authContainer = document.querySelector(".auth-container");
+const flashcardApp = document.getElementById("flashcards-app"); // make sure your flashcard app has id="app"
+const authForm = document.getElementById("auth-form");
+const authTitle = document.getElementById("auth-title");
+const switchToSignup = document.getElementById("switch-to-signup");
+let isSignup = false;
+
+// Switch between login and signup forms
+switchToSignup.addEventListener("click", (e) => {
+  e.preventDefault();
+  isSignup = !isSignup;
+
+  if (isSignup) {
+    authTitle.textContent = "Sign Up";
+    authForm.innerHTML = `
+      <div class="form-group">
+        <input type="text" id="new-username" placeholder="Username" required />
+      </div>
+      <div class="form-group">
+        <input type="email" id="email" placeholder="Email" required />
+      </div>
+      <div class="form-group">
+        <input type="password" id="new-password" placeholder="Password" required />
+      </div>
+      <button type="submit" class="auth-btn">Sign Up</button>
+    `;
+    switchToSignup.textContent = "Already have an account? Login";
   } else {
-    document.getElementById("login-error").style.display = "block";
+    authTitle.textContent = "Login";
+    authForm.innerHTML = `
+      <div class="form-group">
+        <input type="text" id="username" placeholder="Username" required />
+      </div>
+      <div class="form-group">
+        <input type="password" id="password" placeholder="Password" required />
+      </div>
+      <button type="submit" class="auth-btn">Login</button>
+    `;
+    switchToSignup.textContent = "Don’t have an account? Sign Up";
   }
-}
+});
+
+// Handle login/signup
+authForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  if (isSignup) {
+    const username = document.getElementById("new-username").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("new-password").value.trim();
+
+    if (!username || !email || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    // Save user in localStorage
+    localStorage.setItem("user", JSON.stringify({ username, email, password }));
+
+    alert("Account created successfully! You can now login.");
+    isSignup = false;
+    switchToSignup.click(); // Switch back to login
+  } else {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (storedUser && storedUser.username === username && storedUser.password === password) {
+      alert("Login successful!");
+      authContainer.style.display = "none"; // Hide login/signup
+      flashcardApp.style.display = "block"; // Show flashcards
+       } else {
+      alert("Invalid credentials. Please try again.");
+    }
+  }
+  
+});
+
+
+
+
+
+
 
 
 
@@ -59,6 +144,7 @@ function makeCard(q, a, tag) {
 const elems = {
   deckList: el("deckList"),
   deckCount: el("deckCount"),
+ 
   currentDeckName: el("currentDeckName"),
   deckMeta: el("deckMeta"),
   cardsList: el("cardsList"),

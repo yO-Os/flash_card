@@ -1,15 +1,18 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
     require_once  __DIR__."/../config/db.php";
 
-function addDecks( $UserId, $deckName, $deckDescription) {
+function addDecks( $deckName, $deckDescription) {
         global $connection;
 
-        $stmt = $connection->prepare("call AddDeck (?, ?, ?, @resultpResult,@pDeckId)");
-        $stmt->bind_param("iss", $UserId, $deckName, $deckDescription);
+        $stmt = $connection->prepare("call AddDeck (?, ?, ?, @pResult,@pDeckId)");
+        $stmt->bind_param("iss", $_SESSION['id'], $deckName, $deckDescription);
         $stmt->execute();
         $stmt->close();
 
-        $res = $connection->query("SELECT @resultpResult AS result, @pDeckId AS deckId");
+        $res = $connection->query("SELECT @pResult AS result, @pDeckId AS deckId");
         $row = $res->fetch_assoc();
 
         return [
@@ -18,9 +21,11 @@ function addDecks( $UserId, $deckName, $deckDescription) {
         ];
     }
 
- function getAllDecks() {
+function getAllDecks() {
         global $connection;
-        $stmt = $connection->prepare("CALL GetDeck()");
+        $stmt = $connection->prepare("CALL GetDeck(?)");
+
+        $stmt->bind_param("i",$_SESSION['id'] );
         $stmt->execute();
         $result = $stmt->get_result();
         $decks = $result->fetch_all(MYSQLI_ASSOC);
@@ -196,6 +201,74 @@ function updateCard($cardId, $front, $back) {
     if ($res) {
         $row = $res->fetch_assoc();
         return ["success" => $row['result'] == 1];
+    } else {
+        return ["success" => false, "error" => "Failed to retrieve result"];
+    }
+}
+function registerUser($name, $email, $password) {
+    global $connection;
+
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+    $stmt = $connection->prepare("CALL AddUser(?, ?, ?,  @userId,@result)");
+    if (!$stmt) {
+        return ["success" => false, "error" => "Prepare failed: " . $connection->error];
+    }
+
+    $stmt->bind_param("sss", $name, $email, $hashedPassword);
+
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return ["success" => 4, "error" => $stmt->error];
+    }
+    $stmt->close();
+
+    while ($connection->more_results() && $connection->next_result()) {;}
+
+    // ✅ Fetch output params from the session variables
+    $res = $connection->query("SELECT @result AS result, @userId AS userId");
+
+    if ($res) {
+        $row = $res->fetch_assoc();
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['id'] = (int)$row['userId'];
+        return [
+            "success" => $row['result'],
+            "id" => (int)$row['userId']
+        ];
+    } else {
+        return ["success" => 4, "error" => "Failed to retrieve result"];
+    }
+}
+
+function authenticateUser($user, $password) {
+    global $connection;
+
+    $stmt = $connection->prepare("CALL CheckUser(?,@password_hashIn,@userId,@result)");
+    if (!$stmt) {
+        return null;
+    }
+
+    $stmt->bind_param("s", $user);
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return null;
+    }
+
+    $res = $connection->query("SELECT @result AS result, @userId AS userId, @password_hashIn AS password_hashIn");
+    if ($res) {
+        $row = $res->fetch_assoc();
+        $password_hashIn = $row['password_hashIn'] ?? '';
+        if ($row['result'] != 1 || !password_verify($password, $password_hashIn)) {
+            return ["success" => false, "id" => 0];
+        }
+        if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['id'] = (int)$row['userId'];
+        return ["success" => $row['result'] == 1, "id" => (int)$row['userId']];
     } else {
         return ["success" => false, "error" => "Failed to retrieve result"];
     }

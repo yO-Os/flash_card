@@ -16,7 +16,7 @@
     if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         $json = file_get_contents("php://input");
         $data = json_decode($json, true);
-        $cardId = $data['cardId'] ?? 0;
+        $cardId = $data['id'] ?? 0;
 
         $status = deleteCard($cardId);
 

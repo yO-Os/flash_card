@@ -9,7 +9,6 @@ if (!$deckId) {
 else{
     $data=GetAllCardsInDeck($deckId);
 $cards= $data['cards'] ?? [];
-echo '<div id="cardsList">';
 
 foreach ($cards as $i => $c) {
     $q = htmlspecialchars($c["Question"], ENT_QUOTES, 'UTF-8');
@@ -21,13 +20,11 @@ foreach ($cards as $i => $c) {
     echo "    <div class=\"tiny muted\">{$tag}</div>";
     echo '  </div>';
     echo '  <div style="width:120px;text-align:right">';
-    echo "    <button data-i=\"{$i}\" class=\"editCard\">open</button> ";
+    echo "    <button data-i=\"{$i}\" class=\"openCard\">open</button> ";
     echo "    <button data-i=\"{$i}\" class=\"delCard\">Delete</button>";
     echo '  </div>';
     echo '</div>';
 }
-
-echo '</div>';
 }
 
 ?>

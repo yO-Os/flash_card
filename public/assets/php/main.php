@@ -1,20 +1,23 @@
 <?php
-ini_set('display_errors', 0);
-error_reporting(E_ERROR | E_PARSE);
-header('Content-Type: application/json; charset=utf-8');
+
+
     require_once  __DIR__."/../../../src/models/Functions.php";
 
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $UserId = $_POST['UserId'] ?? 1;
-        $deckName = $_POST['deckName'] ?? '';
-        $deckDescription = $_POST['deckDescription'] ?? '';
-
-        $status = addDecks($UserId, $deckName, $deckDescription);
-
-        header('Content-Type: application/json');
-        echo json_encode($status);
-        exit;
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            // echo "Session user ID: " . $_SESSION['id'];
+            // exit;
+            $deckName = $_POST['deckName'] ?? '';
+            $deckDescription = $_POST['deckDescription'] ??     '';
+            
+            $status = addDecks( $deckName, $deckDescription);
+            
+            header('Content-Type: application/json');
+            echo json_encode($status);
+            exit;
 
 
         }

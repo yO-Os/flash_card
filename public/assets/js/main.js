@@ -14,6 +14,7 @@ cancelDeckButton.addEventListener("click",UnToggleMenu);
 addDeckButton.addEventListener("click",ToggleMenu);
 editButton.addEventListener("click",EditDeck)
 attachDeckEventListeners();
+attachCardEventListeners();
 
 function UnToggleMenu(){
     window.document.getElementById("deckForm").style.display="none";
@@ -51,7 +52,7 @@ function AddDeck() {
     fetch("/public/assets/php/main.php", {
         method: "POST",
         headers: {"Content-Type": "application/x-www-form-urlencoded" },
-        body: `UserId=${encodeURIComponent(1)}&deckName=${encodeURIComponent(DeckName)}&deckDescription=${encodeURIComponent(DeckDescription)}`
+        body: `deckName=${encodeURIComponent(DeckName)}&deckDescription=${encodeURIComponent(DeckDescription)}`
     })
     .then(res=>res.json())
 
@@ -92,11 +93,12 @@ function fetchCard() {
         deckDescription.innerText=data['Description'] || '';
         cards=data['cards'];
         if (cards.length > 0) {
+            if (index >= cards.length) index = 0;
             Question.textContent = cards[index]?.Question || 'No cards in this deck';
             Answer.textContent = cards[index]?.Answer || '';
             if (cards.length > index + 1)
             nextDue.innerText = cards[index+1].Question;
-        else {
+            else {
             nextDue.innerText = ' end ';
         }
 
@@ -149,6 +151,7 @@ function attachDeckEventListeners() {
         if (e.target.classList.contains("select")) {
             const deckId = e.target.dataset.id;
             currentId=deckId;
+            index=0;
             fetchCard();
             reloadCards();
             console.log("Open deck", deckId);
@@ -160,11 +163,44 @@ function attachDeckEventListeners() {
             const deckId = e.target.dataset.id;
             DeleteDeck(deckId);
             console.log("Delete deck", deckId);
-            // confirm deletion + send fetch request here
         }
     });
 }
 
+function attachCardEventListeners(){
+    const cardList = document.getElementById("cardsList");
+    cardList.addEventListener("click", (e) => {
+        if (e.target.classList.contains("openCard")) {
+            index = e.target.dataset.i;
+            fetchCard();
+            console.log("open card");
+        }
+        if (e.target.classList.contains("delCard")) {
+            index = e.target.dataset.i;
+            DeleteCard();
+            fetchCard();
+            console.log("delete card");
+        }
+});
+}
+
+function DeleteCard(){
+    const cardId=cards[index].id
+    fetch('/public/assets/php/card.php', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id:cardId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("Card deleted successfully");
+                fetchCard();
+                reloadCards();
+            }else alert('Error deleting card ,'+data.error);
+        }
+    );
+    }
 function DeleteDeck(DeckId){
     fetch('/public/assets/php/main.php', {
             method: 'DELETE',

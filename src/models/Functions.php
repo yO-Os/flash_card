@@ -2,7 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-    require_once  __DIR__."/../config/db.php";
+require_once  __DIR__."/../config/db.php";
+
 
 function addDecks( $deckName, $deckDescription) {
         global $connection;
@@ -225,18 +226,42 @@ function registerUser($name, $email, $password) {
 
     while ($connection->more_results() && $connection->next_result()) {;}
 
-    // ✅ Fetch output params from the session variables
     $res = $connection->query("SELECT @result AS result, @userId AS userId");
 
     if ($res) {
+        
         $row = $res->fetch_assoc();
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }
             $_SESSION['id'] = (int)$row['userId'];
+            $verify=sendVerficationCode((int)$row['userId']);
+            if ($verify['success']) {
+                $code = $verify['code'];
+                $userId = (int)$row['userId'];
+                $verifyLink = "http://localhost/public/assets/php/verify.php?code=$code&id=$userId";
+
+                ini_set("SMTP", "localhost");
+                ini_set("smtp_port", "1025");
+                ini_set("sendmail_from", "no-reply@flashcard.local");
+
+                $subject = "Verify your FlashCard account";
+                $message = "
+                <h2>Welcome, $name!</h2>
+                <p>Click below to verify your email:</p>
+                <a href='$verifyLink'>Verify Account</a>
+                ";
+
+                $headers = "MIME-Version: 1.0\r\n";
+                $headers .= "Content-type:text/html; charset=UTF-8\r\n";
+                $headers .= "From: FlashCard <no-reply@flashcard.local>\r\n";
+
+
+                mail($email, $subject, $message, $headers);
+        }
         return [
             "success" => $row['result'],
-            "id" => (int)$row['userId']
+            "id" => (int)$row['userId'],"code"=>$verify['code']
         ];
     } else {
         return ["success" => 4, "error" => "Failed to retrieve result"];
@@ -262,15 +287,33 @@ function authenticateUser($user, $password) {
         $row = $res->fetch_assoc();
         $password_hashIn = $row['password_hashIn'] ?? '';
         if ($row['result'] != 1 || !password_verify($password, $password_hashIn)) {
-            return ["success" => false, "id" => 0];
+            return ["success" => 3, "id" => 0];
         }
         if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }
             $_SESSION['id'] = (int)$row['userId'];
-        return ["success" => $row['result'] == 1, "id" => (int)$row['userId']];
+        return ["success" => $row['result'], "id" => (int)$row['userId']];
     } else {
-        return ["success" => false, "error" => "Failed to retrieve result"];
+        return ["success" =>3, "error" => "Failed to retrieve result"];
     }
+}
+function sendVerficationCode($id) {
+    global $connection;
+
+    $code = bin2hex(random_bytes(16));
+    $stmt = $connection->prepare("CALL AssignToken(?, ?)");
+    if (!$stmt) {
+        return ["success" => false, "error" => "Prepare failed: " . $connection->error];
+    }
+
+    $stmt->bind_param("ss", $id, $code);
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return ["success" => false, "error" => "Execute failed: " . $stmt->error];
+    }
+
+    $stmt->close();
+    return ["success" => true, "code" => $code];
 }
 ?>

@@ -88,9 +88,15 @@ authForm.addEventListener("submit", (e) => {
     .then(res=>res.json())
     .then(data=>{
         console.log(data);
-        if(data.success){
+        if(data.success==1){
             window.location.replace("mainPage.php");
         }
+        else if(data.success==0){
+        alert("Invalid username or password.");
+    }
+    else if(data.success==3){
+        alert("Account not verified. Please check your email.");
+    }
     else {
         alert('Login failed: ' + data.error);
     }

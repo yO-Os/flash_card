@@ -6,7 +6,7 @@ let cancelDeckButton=window.document.getElementById("cancelDeck");
 let editButton=window.document.getElementById("saveDeck");
 let cards=[];
 let index=0;
-
+let isFlipped=false;
 let currentId=0;
 
 submitDeckButton.addEventListener("click",AddDeck);
@@ -15,6 +15,16 @@ addDeckButton.addEventListener("click",ToggleMenu);
 editButton.addEventListener("click",EditDeck)
 attachDeckEventListeners();
 attachCardEventListeners();
+window.document.getElementById("themeBtn").onclick = () => {
+  document.body.classList.toggle("light");
+  if (document.body.classList.contains("light")) {
+    document.body.style.background = "linear-gradient(180deg,#f7f9fc,#eef2ff)";
+    document.body.style.color = "#0b1220";
+  } else {
+    document.body.style.background = "linear-gradient(180deg,#071024,#081328)";
+    document.body.style.color = "var(--text)";
+  }
+};
 
 function UnToggleMenu(){
     window.document.getElementById("deckForm").style.display="none";
@@ -93,13 +103,17 @@ function fetchCard() {
         deckDescription.innerText=data['Description'] || '';
         cards=data['cards'];
         if (cards.length > 0) {
-            if (index >= cards.length) index = 0;
+            if (index >= cards.length) {
+                index = 0;
+            }
+                
             Question.textContent = cards[index]?.Question || 'No cards in this deck';
             Answer.textContent = cards[index]?.Answer || '';
-            if (cards.length > index + 1)
+            if (cards.length > index + 1){
             nextDue.innerText = cards[index+1].Question;
+            }
             else {
-            nextDue.innerText = ' end ';
+            nextDue.innerText = cards[0].Question;
         }
 
     }else {
@@ -213,3 +227,66 @@ function DeleteDeck(DeckId){
             else alert('Error deleting card ,'+data.error);
         });
     }
+
+function nextCard(){
+    if (cards.length === 0) return;
+    index++;
+    if (index >= cards.length) index = 0;
+    const Question=document.getElementById("frontText");
+    const Answer=document.getElementById("backText");
+    const nextDue=document.getElementById("nextDue");
+    Question.textContent = cards[index]?.Question || 'No cards in this deck';
+    Answer.textContent = cards[index]?.Answer || '';
+    if (cards.length > index + 1){
+        nextDue.innerText = cards[index+1].Question;
+    }
+    else {
+        nextDue.innerText = cards[0].Question;
+    }
+    isFlipped=true;
+    flipCard();
+}
+function prevCard(){
+    if (cards.length === 0) return;
+    index--;
+    if (index < 0) index = cards.length - 1;
+    const Question=document.getElementById("frontText");
+    const Answer=document.getElementById("backText");
+    const nextDue=document.getElementById("nextDue");
+    Question.textContent = cards[index]?.Question || 'No cards in this deck';
+    Answer.textContent = cards[index]?.Answer || '';
+    if (cards.length > index + 1){
+        nextDue.innerText = cards[index+1].Question;
+    }else {
+        nextDue.innerText = cards[0].Question;
+    }
+    isFlipped=true;
+    flipCard();
+}
+function flipCard() {
+    if(isFlipped){
+        document.querySelector(".back").style.display = "none";
+        document.querySelector(".front").style.display = "flex";
+        isFlipped=false;
+        return;
+    }else {
+        document.querySelector(".back").style.display ="flex";
+        document.querySelector(".front").style.display ="none";
+        isFlipped=true;
+        return;
+    }
+}
+
+document.addEventListener("keydown", (event) => {
+  switch (event.key) {
+    case " ":
+      flipCard();
+      break;
+    case "ArrowLeft":
+      nextCard();
+      break;
+    case "ArrowRight":
+      prevCard();
+      break;
+  }
+});

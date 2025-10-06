@@ -30,8 +30,7 @@ error_reporting(E_ALL);
 <div class="container">
   <aside class="panel">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div><strong>Decks</strong><div class="tiny muted">localStorage</div></div>
-      <div class="small muted" id="deckCount">0</div>
+      <div><strong>Decks</strong></div>
     </div>
 
     <div class="controls">

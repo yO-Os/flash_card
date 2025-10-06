@@ -3,6 +3,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once  __DIR__."/../../../src/models/Functions.php";
+ini_set("SMTP", "localhost");
+ini_set("smtp_port", "1025");
+ini_set("sendmail_from", "no-reply@localhost.com");
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $json = file_get_contents("php://input");
     $data = json_decode($json, true);

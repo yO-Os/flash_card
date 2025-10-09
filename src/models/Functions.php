@@ -201,7 +201,7 @@ function updateCard($cardId, $front, $back) {
     $res = $connection->query("SELECT @result AS result");
     if ($res) {
         $row = $res->fetch_assoc();
-        return ["success" => $row['result'] == 1];
+        return ["success" => $row['result'] == 1,"error" => "No card updated (either not found or no new changes)"];
     } else {
         return ["success" => false, "error" => "Failed to retrieve result"];
     }
@@ -239,7 +239,7 @@ function registerUser($name, $email, $password) {
             if ($verify['success']) {
                 $code = $verify['code'];
                 $userId = (int)$row['userId'];
-                $verifyLink = "http://localhost/public/assets/php/verify.php?code=$code&id=$userId";
+                $verifyLink = "http://localhost:8000/public/assets/php/verify.php?code=$code&id=$userId";
 
                 ini_set("SMTP", "localhost");
                 ini_set("smtp_port", "1025");
@@ -315,5 +315,68 @@ function sendVerficationCode($id) {
 
     $stmt->close();
     return ["success" => true, "code" => $code];
+}
+function needingReview(){
+    global $connection;
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    $userId = $_SESSION['id'];
+
+    $stmt = $connection->prepare("CALL NeedingReview(?)");
+    if (!$stmt) {
+        return [];
+    }
+
+    $stmt->bind_param("i", $userId);
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return [];
+    }
+
+    $result = $stmt->get_result();
+    if (!$result) {
+        $stmt->close();
+        return [];
+    }
+
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $result->free();
+    $stmt->close();
+    while ($connection->more_results() && $connection->next_result()) {}
+
+    $decks = [];
+    foreach ($data as $row) {
+        $deckId = $row['Deck_id'];
+        if (!isset($decks[$deckId])) {
+            $decks[]=getDeckById($deckId);
+        }
+    }
+
+    return $decks ?: [];
+}
+function checkAnswer($cardId, $isCorrect) {
+    global $connection;
+
+    $stmt = $connection->prepare("CALL CheckAnswer(?, ?, @result)");
+    if (!$stmt) {
+        return ["success" => false, "error" => "Prepare failed: " . $connection->error];
+    }
+
+    $stmt->bind_param("ii", $cardId, $isCorrect);
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return ["success" => false, "error" => "Execute failed: " . $stmt->error];
+    }
+
+    $stmt->close();
+
+    $res = $connection->query("SELECT @result AS result");
+    if ($res) {
+        $row = $res->fetch_assoc();
+        return ["success" => $row['result'] == 1,"id"=>$cardId,"isCorrect"=>$isCorrect];
+    } else {
+        return ["success" => false, "error" => "Failed to retrieve result"];
+    }
 }
 ?>

@@ -1,4 +1,3 @@
-let EditCardBtn=window.document.getElementById("editModeBtn");
 let submitCardButton=window.document.getElementById("addCardBtn");
 let cancelCardButton=window.document.getElementById("clearCards");
 let submitEditButton=window.document.getElementById("submitCard");
@@ -6,10 +5,10 @@ let cancelEditButton=window.document.getElementById("cancelCard");
 
 submitCardButton.addEventListener("click",AddCard);
 cancelCardButton.addEventListener("click",clearCards);
-EditCardBtn.addEventListener("click",ToggleEditMenu);
 submitEditButton.addEventListener("click",EditCard);
  cancelEditButton.addEventListener("click",UnToggleEditMenu);
-
+ attachCardEventListeners();
+let EditIndex=0;
 function ToggleEditMenu() {
     if(currentId==0){
         alert("No cards to edit in this deck or you haven't selected a deck");
@@ -22,8 +21,8 @@ function ToggleEditMenu() {
         if(CardForm.style.display==="none") {
             CardForm.style.display="flex";
             CardForm.style.flexDirection="column";
-            NQuestion.value=cards[index].Question;
-            NAnswer.value=cards[index].Answer;
+            NQuestion.value=cards[EditIndex].Question;
+            NAnswer.value=cards[EditIndex].Answer;
         } else {
             CardForm.style.display="none";
         }
@@ -94,7 +93,7 @@ function EditCard() {
     const NQuestion=window.document.getElementById("EditQuestion");
     const NAnswer=window.document.getElementById("EditAnswer");
     const Error = document.getElementById("EditCardError");
-    const cardId=cards[index].id
+    const cardId=cards[EditIndex].id
 
     if (!NQuestion.value) {
         Error.textContent = "Please enter a question";
@@ -124,5 +123,37 @@ function EditCard() {
             else alert('Error Editing card');
         });
  }
+ function attachCardEventListeners(){
+    const cardList = document.getElementById("cardsList");
+    cardList.addEventListener("click", (e) => {
+        if (e.target.classList.contains("openCard")) {
+            EditIndex = e.target.dataset.i;
+            ToggleEditMenu()
+        }
+        if (e.target.classList.contains("delCard")) {
+            EditIndex = e.target.dataset.i;
+            DeleteCard();
+            fetchCard();
+            console.log("delete card");
+        }
+});
+}
+function DeleteCard(){
+    const cardId=cards[index].id
+    fetch('/public/assets/php/card.php', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id:cardId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("Card deleted successfully");
+                fetchCard();
+                reloadCards();
+            }else alert('Error deleting card ,'+data.error);
+        }
+    );
+    }
 
  

@@ -4,17 +4,22 @@ let addDeckButton=window.document.getElementById("newDeckBtn");
 let submitDeckButton=window.document.getElementById("submitDeck");
 let cancelDeckButton=window.document.getElementById("cancelDeck");
 let editButton=window.document.getElementById("saveDeck");
+let NeedingReviewBtn=window.document.getElementById("NeedingReview");
 let cards=[];
 let index=0;
 let isFlipped=false;
 let currentId=0;
+let acc=0;
+let correct=0;
+let reviewed=0;
 
 submitDeckButton.addEventListener("click",AddDeck);
 cancelDeckButton.addEventListener("click",UnToggleMenu);
 addDeckButton.addEventListener("click",ToggleMenu);
 editButton.addEventListener("click",EditDeck)
+NeedingReviewBtn.addEventListener("click",reloadDecksToBeReviewd);
 attachDeckEventListeners();
-attachCardEventListeners();
+attachAnswerEventListeners();
 window.document.getElementById("themeBtn").onclick = () => {
   document.body.classList.toggle("light");
   if (document.body.classList.contains("light")) {
@@ -88,6 +93,9 @@ function fetchCard() {
     const Question=document.getElementById("frontText");
     const Answer=document.getElementById("backText");
     const nextDue=document.getElementById("nextDue");
+    const stat=document.getElementById("statText");
+    const accuracy=document.getElementById("accuracy");
+    const progressBar=document.getElementById("progressFill");
     fetch(`/public/assets/php/card.php?deckId=${encodeURIComponent(currentId)}`, {
     method: "GET",
     headers: { "Accept": "application/json" }
@@ -97,8 +105,6 @@ function fetchCard() {
     .then(data=>{
         deckNameEdit.value=data['Title'] || '';
         deckDescriptionEdit.value=data['Description'] || '';
-        deckNameEdit.innerText=data['Title'] || '';
-        deckDescriptionEdit.innerText=data['Description'] || '';
         deckName.innerText=data['Title'];
         deckDescription.innerText=data['Description'] || '';
         cards=data['cards'];
@@ -109,6 +115,10 @@ function fetchCard() {
                 
             Question.textContent = cards[index]?.Question || 'No cards in this deck';
             Answer.textContent = cards[index]?.Answer || '';
+            acc=(correct/(cards.length))*100;
+            stat.innerText = `${index + 1} of ${cards.length} cards`;
+            accuracy.innerText = `Acc: ${acc}%`;
+            progressBar.style.width = (((index + 1) / cards.length )* 100) + '%';
             if (cards.length > index + 1){
             nextDue.innerText = cards[index+1].Question;
             }
@@ -123,11 +133,23 @@ function fetchCard() {
     }
     });
 }
-function reloadDecks() {
-  fetch("/public/assets/php/decks.php") 
+function reloadDecksToBeReviewd() {
+    fetch("/public/assets/php/decks.php?action=getDecksToBeReviewed",{
+    method: 'GET', headers: { 'Accept': 'application/json' }
+  })
     .then(res => res.text())
     .then(html => {
-      document.getElementById("deckList").innerHTML = html;
+      document.getElementById("cardsList").innerHTML = html;
+    });
+}
+function reloadDecks() {
+  fetch("/public/assets/php/decks.php?action=getAllDecks",{
+    method: 'GET', headers: { 'Accept': 'application/json' }
+  }
+  )
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("cardsList").innerHTML = html;
     });
 }
 function reloadCards() {
@@ -166,6 +188,8 @@ function attachDeckEventListeners() {
             const deckId = e.target.dataset.id;
             currentId=deckId;
             index=0;
+            reviewed=0;
+            acc=0;
             fetchCard();
             reloadCards();
             console.log("Open deck", deckId);
@@ -181,40 +205,49 @@ function attachDeckEventListeners() {
     });
 }
 
-function attachCardEventListeners(){
-    const cardList = document.getElementById("cardsList");
-    cardList.addEventListener("click", (e) => {
-        if (e.target.classList.contains("openCard")) {
-            index = e.target.dataset.i;
-            fetchCard();
-            console.log("open card");
+
+function attachAnswerEventListeners(){
+    const Answer = document.getElementById("answer");
+    Answer.addEventListener("click", (e) => {
+        if (e.target.classList.contains("easyBtn")) {
+            easyAnswerCheck();
         }
-        if (e.target.classList.contains("delCard")) {
-            index = e.target.dataset.i;
-            DeleteCard();
-            fetchCard();
-            console.log("delete card");
+        if (e.target.classList.contains("hardBtn")) {
+            hardAnswerCheck();
         }
 });
 }
-
-function DeleteCard(){
-    const cardId=cards[index].id
+function easyAnswerCheck(){
     fetch('/public/assets/php/card.php', {
-            method: 'DELETE',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ id:cardId })
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action:'answer',cardId:cards[index].id, correct:1 })
         })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                alert("Card deleted successfully");
-                fetchCard();
-                reloadCards();
-            }else alert('Error deleting card ,'+data.error);
+                correct++;
+                nextCard();
+            }else alert('Error recording answer ,'+data.error);
         }
     );
-    }
+}
+function hardAnswerCheck(){
+    fetch('/public/assets/php/card.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action:'answer',id:cards[index].id, correct:0 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                nextCard();
+
+            }else alert('Error recording answer ,'+data.error);
+        }
+    );
+}
+
 function DeleteDeck(DeckId){
     fetch('/public/assets/php/main.php', {
             method: 'DELETE',
@@ -231,12 +264,25 @@ function DeleteDeck(DeckId){
 function nextCard(){
     if (cards.length === 0) return;
     index++;
-    if (index >= cards.length) index = 0;
+    reviewed++;
+    if (index >= cards.length){
+        index = 0;
+        reviewed=0;
+        correct=0;
+        alert("You've reached the end of the deck, starting over.");
+    } 
     const Question=document.getElementById("frontText");
     const Answer=document.getElementById("backText");
     const nextDue=document.getElementById("nextDue");
+    const stat=document.getElementById("statText");
+    const accuracy=document.getElementById("accuracy");
+    const progressBar=document.getElementById("progressFill");
     Question.textContent = cards[index]?.Question || 'No cards in this deck';
     Answer.textContent = cards[index]?.Answer || '';
+    progressBar.style.width = (((index + 1) / cards.length )* 100) + '%';
+    acc=(correct/(cards.length))*100;
+    stat.innerText = `${index + 1} of ${cards.length} cards`;
+    accuracy.innerText = `Acc: ${acc}%`;
     if (cards.length > index + 1){
         nextDue.innerText = cards[index+1].Question;
     }
@@ -249,12 +295,25 @@ function nextCard(){
 function prevCard(){
     if (cards.length === 0) return;
     index--;
-    if (index < 0) index = cards.length - 1;
+    reviewed--;
+    correct--;
+    if (index < 0){
+        index = 0;
+        reviewed=0;
+        correct=0;
+    } else if (correct < 0) correct=0;
     const Question=document.getElementById("frontText");
     const Answer=document.getElementById("backText");
     const nextDue=document.getElementById("nextDue");
+    const progressBar=document.getElementById("progressFill");
+    const stat=document.getElementById("statText");
+    const accuracy=document.getElementById("accuracy");
     Question.textContent = cards[index]?.Question || 'No cards in this deck';
     Answer.textContent = cards[index]?.Answer || '';
+    progressBar.style.width = (((index + 1) / cards.length )* 100) + '%';
+    acc=(correct/(cards.length))*100;
+    stat.innerText = `${index + 1} of ${cards.length} cards`;
+    accuracy.innerText = `Acc: ${acc}%`;
     if (cards.length > index + 1){
         nextDue.innerText = cards[index+1].Question;
     }else {
@@ -278,15 +337,23 @@ function flipCard() {
 }
 
 document.addEventListener("keydown", (event) => {
+    
   switch (event.key) {
-    case " ":
+    case "Escape":
+        reloadDecks();
+        currentId=0;
+        index=0;
+        fetchCard();
+        reloadCards();
+      break;
+    case "Enter":
       flipCard();
       break;
     case "ArrowLeft":
-      nextCard();
+      prevCard();
       break;
     case "ArrowRight":
-      prevCard();
+      nextCard();
       break;
   }
 });

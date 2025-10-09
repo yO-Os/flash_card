@@ -22,7 +22,7 @@ error_reporting(E_ALL);
   <div class="toolbar">
     <button id="newDeckBtn">+ New Deck</button>
     <button id="importBtn">Progress</button>
-    <button id="exportBtn">Need Reviewing</button>
+    <button id="NeedingReview">Need Reviewing</button>
     <button id="themeBtn">Toggle Theme</button>
   </div>
 </header>
@@ -119,17 +119,17 @@ error_reporting(E_ALL);
             <div id="frontText" class="big" style="margin-top:10px">Select a deck to begin</div>
             <div class="muted tiny" style="margin-top:8px">Press Space or Enter to flip. ← → to navigate.</div>
           </div>
-          <div class="back" style="display:none">
+          <div class="back" id="answer" style="display:none">
             <div id="backText" class="answer">—</div>
-            <div style="margin-top:12px" class="actions"><button id="knownBtn">I knew it</button><button id="easyBtn">Easy</button><button id="hardBtn">Hard</button></div>
+            <div style="margin-top:12px" class="actions"><button class="easyBtn">Easy</button><button class="hardBtn">Hard</button></div>
           </div>
         </div>
       </div>
 
       <div class="statbar">
         <div class="progressbar" title="progress"><i id="progressFill"></i></div>
-        <div id="statText" class="muted tiny">0 reviewed • 0 due</div>
-        <div style="margin-left:auto" class="chips"><div class="chip" id="streak">Streak: 0</div><div class="chip" id="accuracy">Acc: 0%</div></div>
+        <div id="statText" class="muted tiny">0 reviewed</div>
+        <div style="margin-left:auto" class="chips"><div class="chip" id="accuracy">Acc: 0%</div></div>
       </div>
 
     </div>

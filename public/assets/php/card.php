@@ -25,18 +25,32 @@
         exit;
     }
 
+    $action = $_GET['action'] ?? '';
+    if ($_SERVER['REQUEST_METHOD'] === 'PUT' && $action === "answerd") {
+        
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $json = file_get_contents("php://input");
-        $data = json_decode($json, true);
+        $data = json_decode($json, true) ?? [];
+        $action = $data['action'] ?? '';
         $cardId = $data['cardId'] ?? 0;
         $Question = $data['question'] ?? '';
         $Answer = $data['answer'] ?? '';
+        if ($action === "answer") {
+            $isCorrect = $data['correct'];
+            $status = checkAnswer($cardId, $isCorrect);
+            header('Content-Type: application/json');
+            echo json_encode($status);
+            exit;
+        }
+        else{
 
-        $status = updateCard($cardId, $Question, $Answer);
-
-        header('Content-Type: application/json');
-        echo json_encode($status);
-        exit;
+            $status = updateCard($cardId, $Question, $Answer);
+            header('Content-Type: application/json');
+            echo json_encode($status);
+            exit;
+        }
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {

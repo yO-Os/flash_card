@@ -20,7 +20,7 @@ foreach ($cards as $i => $c) {
     echo "    <div class=\"tiny muted\">{$tag}</div>";
     echo '  </div>';
     echo '  <div style="width:120px;text-align:right">';
-    echo "    <button data-i=\"{$i}\" class=\"openCard\">open</button> ";
+    echo "    <button data-i=\"{$i}\" class=\"openCard\">Edit</button> ";
     echo "    <button data-i=\"{$i}\" class=\"delCard\">Delete</button>";
     echo '  </div>';
     echo '</div>';

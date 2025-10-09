@@ -204,7 +204,7 @@ footer {
   background: linear-gradient(90deg, var(--accent), #60a5fa);
   width: 0%;
 }
-/* Overlay form at top */
+/* Modal styles */
 #deckForm,#EditCardForm {
     display: none;              
     position: fixed;            

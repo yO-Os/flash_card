@@ -40,7 +40,23 @@ CREATE TRIGGER Add_progess
 AFTER INSERT ON `FlashCards`
 FOR EACH ROW
 BEGIN
-	INSERT INTO `Progress`(`Card_id`)
-    VALUES (NEW.`id`);
+	DECLARE DeckId INT;
+    DECLARE UserId INT;
+    SELECT `Deck_id` INTO DeckId FROM `FlashCards` WHERE `id`=NEW.`id`;
+    SELECT `User_id` INTO UserId FROM `Deck` WHERE `id`=DeckId;
+	INSERT INTO `Progress`(`Card_id`,`Deck_id`,`User_id`)
+    VALUES (NEW.`id`,DeckId,UserId);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER Add_Session
+AFTER INSERT ON `Deck`
+FOR EACH ROW
+BEGIN
+	DECLARE UserId INT;
+    SELECT `User_id` INTO UserId FROM `Deck` WHERE `id`=NEW.`id`;
+	INSERT INTO `Study_session`(`User_id`,`Deck_id`)
+    VALUES (UserId,NEW.`id`);
 END$$
 DELIMITER ;

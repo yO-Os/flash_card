@@ -108,7 +108,6 @@ error_reporting(E_ALL);
         <div class="actions">
           <button id="studyBtn">Study</button>
           <button id="quizBtn">Quiz</button>
-          <button id="editModeBtn">Edit</button>
         </div>
       </div>
 

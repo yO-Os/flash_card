@@ -20,6 +20,7 @@ editButton.addEventListener("click",EditDeck)
 NeedingReviewBtn.addEventListener("click",reloadDecksToBeReviewd);
 attachDeckEventListeners();
 attachAnswerEventListeners();
+reloadDecks();
 window.document.getElementById("themeBtn").onclick = () => {
   document.body.classList.toggle("light");
   if (document.body.classList.contains("light")) {
@@ -139,7 +140,7 @@ function reloadDecksToBeReviewd() {
   })
     .then(res => res.text())
     .then(html => {
-      document.getElementById("cardsList").innerHTML = html;
+      document.getElementById("deckList").innerHTML = html;
     });
 }
 function reloadDecks() {
@@ -149,7 +150,7 @@ function reloadDecks() {
   )
     .then(res => res.text())
     .then(html => {
-      document.getElementById("cardsList").innerHTML = html;
+      document.getElementById("deckList").innerHTML = html;
     });
 }
 function reloadCards() {
@@ -337,7 +338,6 @@ function flipCard() {
 }
 
 document.addEventListener("keydown", (event) => {
-    
   switch (event.key) {
     case "Escape":
         reloadDecks();

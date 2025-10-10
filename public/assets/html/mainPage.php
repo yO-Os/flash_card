@@ -21,9 +21,9 @@ error_reporting(E_ALL);
   <div class="small muted">Smart study</div>
   <div class="toolbar">
     <button id="newDeckBtn">+ New Deck</button>
-    <button id="importBtn">Progress</button>
     <button id="NeedingReview">Need Reviewing</button>
     <button id="themeBtn">Toggle Theme</button>
+    <button id="logout">LogOut</button>
   </div>
 </header>
 
@@ -32,37 +32,9 @@ error_reporting(E_ALL);
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <div><strong>Decks</strong></div>
     </div>
-
-    <div class="controls">
-      <input id="searchDeck" placeholder="Search decks or tags" />
-      <select id="sortDecks"><option value="recent">Recent</option><option value="name">Name</option></select>
-    </div>
-
     <div class="deck-list" id="deckList">
-        <?php
-          require_once "../../../src/models/Functions.php";
-          $decks = getAllDecks(); // fetch from DB
-        ?>
-        <?php if (empty($decks)): ?>
-          <p>No decks available.</p>
-<?php else: ?>
-    <?php foreach ($decks as $deck): ?>
-    <div class="deck-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #444;">
-        <div>
-            <strong><?= htmlspecialchars($deck['Title'] ?: 'Untitled') ?></strong>
-            <div class="small muted">
-                <?= htmlspecialchars($deck['Description']) ?>
-            </div>
-        </div>
-        <div>
-            <button data-id="<?= $deck['id'] ?>" class="select">Open</button>
-            <button data-id="<?= $deck['id'] ?>" class="delete">Delete</button>
-        </div>
-    </div>
-<?php endforeach; ?>
-
-<?php endif; ?>
-    </div>
+        
+  </div>
  <div id="deckForm">
         <h2>Deck Info</h2>
         <input type="text" id="deckName" placeholder="Deck Name">

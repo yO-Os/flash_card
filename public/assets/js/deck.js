@@ -1,10 +1,10 @@
-let submitCardButton=window.document.getElementById("addCardBtn");
-let cancelCardButton=window.document.getElementById("clearCards");
+//let submitCardButton=window.document.getElementById("addCardBtn");
+//let cancelCardButton=window.document.getElementById("clearCards");
 let submitEditButton=window.document.getElementById("submitCard");
 let cancelEditButton=window.document.getElementById("cancelCard");
 
-submitCardButton.addEventListener("click",AddCard);
-cancelCardButton.addEventListener("click",clearCards);
+//submitCardButton.addEventListener("click",AddCard);
+//cancelCardButton.addEventListener("click",clearCards);
 submitEditButton.addEventListener("click",EditCard);
  cancelEditButton.addEventListener("click",UnToggleEditMenu);
  attachCardEventListeners();
@@ -116,6 +116,7 @@ function EditCard() {
         .then(data => {
             if (data.success) {
                 fetchCard();
+                reloadCards();
                 alert("Card edited successfully");
                 clearEditCards();
                 UnToggleEditMenu();

@@ -20,7 +20,7 @@ switchToSignup.addEventListener("click", (e) => {
         <input type="email" id="email" placeholder="Email" required />
       </div>
       <div class="form-group">
-        <input type="password" id="new-password" placeholder="Password" required />
+        <input type="password" id="new-password" placeholder="Password" minlength="6" maxlength="30" required />
       </div>
       <button type="submit" class="auth-btn">Sign Up</button>
     `;
@@ -36,7 +36,7 @@ switchToSignup.addEventListener("click", (e) => {
       </div>
       <button type="submit" class="auth-btn">Login</button>
     `;
-    switchToSignup.textContent = "Don’t have an account? Sign Up";
+    switchToSignup.textContent = "Sign Up";
   }
 });
 
@@ -89,7 +89,7 @@ authForm.addEventListener("submit", (e) => {
     .then(data=>{
         console.log(data);
         if(data.success==1){
-            window.location.replace("mainPage.php");
+            window.location.replace("mainPage.html");
         }
         else if(data.success==0){
         alert("Invalid username or password.");

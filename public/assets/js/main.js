@@ -5,6 +5,8 @@ let submitDeckButton=window.document.getElementById("submitDeck");
 let cancelDeckButton=window.document.getElementById("cancelDeck");
 let editButton=window.document.getElementById("saveDeck");
 let NeedingReviewBtn=window.document.getElementById("NeedingReview");
+let studyModeBtn=window.document.getElementById("studyBtn");
+let quizModeBtn=window.document.getElementById("quizBtn");
 let cards=[];
 let index=0;
 let isFlipped=false;
@@ -12,15 +14,84 @@ let currentId=0;
 let acc=0;
 let correct=0;
 let reviewed=0;
+let studymode=true;
+const uploadBtn = document.getElementById('uploadBtn');
+const loading = document.getElementById('loading');
+const message = document.getElementById('message');
+
+document.getElementById('uploadBtn').addEventListener('click', async (e) => {
+    e.preventDefault(); 
+  const file = document.getElementById('fileInput').files[0];
+  if (!file) return alert('Choose a file');
+ // string like "1"
+ console.log("uploading");
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('deck_id', currentId); // <-- important
+
+  
+  const res = await fetch('../php/card.php', {
+    method: 'POST',
+    body: fd,
+    // DON'T set Content-Type — browser sets multipart boundary automatically
+  });
+  const data = await res.json();
+  console.log(data);
+  if (data.success) {
+          alert(`Generated ${data.total} flashcards!`);
+          fetchCard();
+          reloadCards();
+        }else {
+          alert('Error generating flashcards: ' + data.error);
+        }
+});
+// uploadBtn.addEventListener('click', async () => {
+//     const fileInput = document.getElementById('fileInput');
+
+//     if (!fileInput.files[0]) {
+//         alert('Please choose a file');
+//         return;
+//     }
+
+//     const formData = new FormData();
+//     formData.append('file', fileInput.files[0]);  // file
+//     formData.append('deck_id', currentId);
+//     // Show loading
+//     loading.style.display = 'block';
+//     message.textContent = '';
+
+//     try {
+
+          
+//         const res = await fetch('/public/assets/php/card.php', {    method: 'POST', body: formData });
+//         const data = await res.json();
+//         if (data.success) {
+//           alert(`Generated ${data.total} flashcards!`);
+//           fetchCard();
+//           reloadCards();
+//         }else {
+//           alert('Error generating flashcards: ' + data.error);
+//         }
+//     } catch (err) {
+//         message.textContent = '❌ Upload failed: ' + err.message;
+//     } finally {
+//         // Hide loading after completion
+//         loading.style.display = 'none';
+//     }
+// });
 
 submitDeckButton.addEventListener("click",AddDeck);
 cancelDeckButton.addEventListener("click",UnToggleMenu);
 addDeckButton.addEventListener("click",ToggleMenu);
 editButton.addEventListener("click",EditDeck)
 NeedingReviewBtn.addEventListener("click",reloadDecksToBeReviewd);
+studyModeBtn.addEventListener("click",studyModeCheck);
+quizModeBtn.addEventListener("click",QuizModeCheck);
+studyModeCheck();
 attachDeckEventListeners();
 attachAnswerEventListeners();
 reloadDecks();
+
 window.document.getElementById("themeBtn").onclick = () => {
   document.body.classList.toggle("light");
   if (document.body.classList.contains("light")) {
@@ -31,6 +102,7 @@ window.document.getElementById("themeBtn").onclick = () => {
     document.body.style.color = "var(--text)";
   }
 };
+
 
 function UnToggleMenu(){
     window.document.getElementById("deckForm").style.display="none";
@@ -91,12 +163,14 @@ function fetchCard() {
     const deckDescription=window.document.getElementById("deckMeta");
     const deckNameEdit=window.document.getElementById("deckTitle");
     const deckDescriptionEdit=window.document.getElementById("deckTags");
+    const deckIdDisplay=window.document.getElementById("deckIdDisplay");
     const Question=document.getElementById("frontText");
     const Answer=document.getElementById("backText");
     const nextDue=document.getElementById("nextDue");
     const stat=document.getElementById("statText");
     const accuracy=document.getElementById("accuracy");
     const progressBar=document.getElementById("progressFill");
+    deckIdDisplay.value=currentId;
     fetch(`/public/assets/php/card.php?deckId=${encodeURIComponent(currentId)}`, {
     method: "GET",
     headers: { "Accept": "application/json" }
@@ -190,6 +264,7 @@ function attachDeckEventListeners() {
             currentId=deckId;
             index=0;
             reviewed=0;
+            correct=0;
             acc=0;
             fetchCard();
             reloadCards();
@@ -200,6 +275,11 @@ function attachDeckEventListeners() {
 
         if (e.target.classList.contains("delete")) {
             const deckId = e.target.dataset.id;
+            currentId=deckId;
+            index=0;
+            reviewed=0;
+            correct=0;
+            acc=0;
             DeleteDeck(deckId);
             console.log("Delete deck", deckId);
         }
@@ -237,7 +317,7 @@ function hardAnswerCheck(){
     fetch('/public/assets/php/card.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action:'answer',id:cards[index].id, correct:0 })
+            body: JSON.stringify({ action:'answer',cardId:cards[index].id, correct:0 })
         })
         .then(res => res.json())
         .then(data => {
@@ -336,7 +416,20 @@ function flipCard() {
         return;
     }
 }
-
+function studyModeCheck(){
+    studymode=true;
+    document.getElementById("cardsList").style.display="block";
+    document.getElementById("sidePanel").style.display="block";
+    document.getElementById("accuracy").style.display="none";
+    document.getElementById("AnswerBtn").style.display="none";
+}
+function QuizModeCheck(){
+    studymode=false;
+    document.getElementById("cardsList").style.display="none";
+    document.getElementById("sidePanel").style.display="none";
+    document.getElementById("accuracy").style.display="block";
+    document.getElementById("AnswerBtn").style.display="flex";
+}
 document.addEventListener("keydown", (event) => {
   switch (event.key) {
     case "Escape":
@@ -350,10 +443,15 @@ document.addEventListener("keydown", (event) => {
       flipCard();
       break;
     case "ArrowLeft":
-      prevCard();
+        if (studymode){
+            prevCard();
+        }
       break;
     case "ArrowRight":
-      nextCard();
+        if (studymode){
+            nextCard();
+        }
+      
       break;
   }
 });

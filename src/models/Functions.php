@@ -347,7 +347,7 @@ function needingReview(){
 
     $decks = [];
     foreach ($data as $row) {
-        $deckId = $row['Deck_id'];
+        $deckId = $row['id'];
         if (!isset($decks[$deckId])) {
             $decks[]=getDeckById($deckId);
         }
@@ -374,7 +374,10 @@ function checkAnswer($cardId, $isCorrect) {
     $res = $connection->query("SELECT @result AS result");
     if ($res) {
         $row = $res->fetch_assoc();
-        return ["success" => $row['result'] == 1,"id"=>$cardId,"isCorrect"=>$isCorrect];
+        if ($row['result'] == 1) {
+            return ["success" => true,"id"=>$cardId,"isCorrect"=>$isCorrect,"error" => "Failed to update review status"];
+        }
+        return ["success" => false,"id"=>$cardId,"isCorrect"=>$isCorrect,"error" => "Failed to find the progress of the card"];
     } else {
         return ["success" => false, "error" => "Failed to retrieve result"];
     }

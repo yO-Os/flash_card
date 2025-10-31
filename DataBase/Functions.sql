@@ -13,7 +13,11 @@ BEGIN
     SELECT SUM(`Correct`),SUM(`Attempts`)
     INTO Correct_,Total_
     FROM `Progress` WHERE `Deck_id`=DeckId; 
-    SET result=(Correct_/Total_)*100;
+    IF Total_=0 THEN
+     SET result=100;
+     ELSE 
+		SET result=(Correct_/Total_)*100;
+	END IF;
     RETURN result;
 END$$
 

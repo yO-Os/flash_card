@@ -1,10 +1,3 @@
-use FLASHCARD;
-
-call AddUser('yonas','email','12345',@result);
-select @result as result;
-/*---------------Add User---------------*/
-
-
 DELIMITER $$
 CREATE PROCEDURE AddUser
 (
@@ -383,10 +376,12 @@ BEGIN
     UPDATE `Progress` 
     SET 
         `Attempts` = `Attempts` + 1,
-        `Correct` = `Correct` + IF(correct_ = 1, 1, 0)
+        `Correct` = `Correct` + correct_
     WHERE `Card_id` = cardId;
+    IF((select count(*) from `Progress` where `Card_id` = cardId)=0) then
+		set result=2;
 
-    IF (ROW_COUNT() > 0) THEN
+    elseif (ROW_COUNT() > 0) THEN
         SET result = 1;
     ELSE
         SET result = 0;
@@ -415,16 +410,16 @@ DELIMITER ;
 
 
 
-/*---------------DECK ACCURACY---------------*/
+/*---------------needibg review---------------*/
 DELIMITER $$
 CREATE PROCEDURE NeedingReview
 (
 IN UserId INT
 )
 BEGIN
-    SELECT `Deck_id`,AverageAccuracyOnDeck(`Deck_id`) AS AverageAccuracy
-    FROM `Progress` 
-    WHERE `User_id`=UserId AND AverageAccuracyOnDeck(`Deck_id`)<70 AND `Attempts`!=0; 
+    SELECT `id`,AverageAccuracyOnDeck(`id`) AS AverageAccuracy
+    FROM `Deck` 
+    WHERE `User_id`=UserId AND AverageAccuracyOnDeck(`id`)<70 ; 
 END$$
 
 DELIMITER ;

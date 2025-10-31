@@ -16,7 +16,6 @@
     <button id="newDeckBtn">+ New Deck</button>
     <button id="NeedingReview">Need Reviewing</button>
     <button id="themeBtn">Toggle Theme</button>
-    <button id="logout">LogOut</button>
   </div>
 </header>
 
@@ -81,16 +80,16 @@
           <div class="front">
             <div class="meta-row"><div class="chip" id="tagChip">—</div><div class="muted tiny" id="nextDue">next: —</div></div>
             <div id="frontText" class="big" style="margin-top:10px">Select a deck to begin</div>
-            <div class="muted tiny" style="margin-top:8px">Press Space or Enter to flip. ← → to navigate.</div>
+            <div class="muted tiny" style="margin-top:8px">Press Enter to flip. ← → to navigate.</div>
           </div>
           <div class="back" id="answer" style="display:none">
             <div id="backText" class="answer">—</div>
-            <div style="margin-top:12px" class="actions"><button class="easyBtn">Easy</button><button class="hardBtn">Hard</button></div>
+            <div style="margin-top:12px" class="actions" id="AnswerBtn"><button class="easyBtn">Easy</button><button class="hardBtn">Hard</button></div>
           </div>
         </div>
       </div>
 
-      <div class="statbar">
+      <div class="statbar" id="statbar">
         <div class="progressbar" title="progress"><i id="progressFill"></i></div>
         <div id="statText" class="muted tiny">0 reviewed</div>
         <div style="margin-left:auto" class="chips"><div class="chip" id="accuracy">Acc: 0%</div></div>
@@ -101,24 +100,22 @@
     <div class="panel" id="sidePanel" style="margin-top:12px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>Add Cards</strong></div>
       <div style="display:grid;grid-template-columns:1fr 120px;gap:8px;margin-bottom:8px">
-        <input id="newQ" placeholder="Question" />
-      </div>
-      <textarea id="newA" placeholder="Answer" rows="3"></textarea>
-      <span id="AddCardError" style="display:none; color:red;"></span>
-      <div style="margin-top:8px">
-  <div style="display:flex;gap:8px;margin-bottom:8px">
-    <button id="addCardBtn">Add Card</button>
-    <button id="clearCards">Cancel</button>
-  </div>
+  <form id="aiForm" style="display:grid;grid-template-columns:1fr 120px;gap:8px;margin-bottom:8px" method="POST" enctype="multipart/form-data">
+  <input id="fileInput" type="file" name="file" accept=".txt,.pdf,.docx" required>
+  <input id="deckIdDisplay" type="number" name="deck_id" placeholder="Deck ID" minlength="0" disabled required>
+  <button id="uploadBtn" type="button">Upload & Generate Flashcards</button>
 
-  <hr />
+</form>
+<br>
+<div>
+<hr display="block" style="margin:8px 0">
 
   <div id="cardsList" style="max-height:160px;overflow:auto"></div>
 </div>
 
+
       
   </main>
-</div>
 
 <footer class="muted tiny"></footer>
 </body>
